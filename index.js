@@ -258,12 +258,12 @@ function init(r) {
 	bot.once("login", () => log("Logged in."));
 	bot.once("kick", () => {
 		console.log("Got 'kick'!");
-		console.log(arguments.join(","));
+		console.log(arguments);
 		setTimeout(() => init("Kick"), config.DELAYS[0]);
 	});
 	bot.once("end", () => {
 		console.log("Got 'end'!");
-		console.log(arguments.join(","));
+		console.log(arguments);
 		setTimeout(() => init("End"), config.DELAYS[1]);
 	});
 	bot.once("error", (m) => {
