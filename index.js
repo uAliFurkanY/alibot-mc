@@ -20,6 +20,7 @@ try {
 } catch {}
 
 try {
+	// arg > env > conf
 	let conf = require(path.join(__dirname, "config.json"));
 	config.WEBSITE =
 		arg.w ||
@@ -256,17 +257,17 @@ function init(r) {
 		login.session = session;
 	});
 	bot.once("login", () => log("Logged in."));
-	bot.once("kick", () => {
+	bot.once("kick", m => {
 		console.log("Got 'kick'!");
-		console.log(arguments);
+		console.log(m);
 		setTimeout(() => init("Kick"), config.DELAYS[0]);
 	});
-	bot.once("end", () => {
+	bot.once("end", m => {
 		console.log("Got 'end'!");
-		console.log(arguments);
+		console.log(m);
 		setTimeout(() => init("End"), config.DELAYS[1]);
 	});
-	bot.once("error", (m) => {
+	bot.once("error", m => {
 		if (m.message === "Invalid session.") {
 			session = false;
 			init("Error " + m);
