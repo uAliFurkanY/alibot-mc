@@ -37,7 +37,7 @@ try {
 	config.ACTIVE =
 		arg.a || process.env.CONF_ACTIVE || conf.ACTIVE || "true";
 	config.DELAYS =
-		delays[+arg.d || +process.env.CONF_DELAYS || +conf.DELAYS || 1];
+		delays[+arg.d || +process.env.CONF_DELAYS || +conf.DELAYS || 4];
 	config.REMOTE =
 		arg.remote || process.env.CONF_REMOTE || conf.REMOTE || false;
 	config.TCP_PORT =
