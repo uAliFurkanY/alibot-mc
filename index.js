@@ -257,25 +257,24 @@ function init(r) {
 		login.session = session;
 	});
 	bot.once("login", () => log("Logged in."));
-	bot.once("kick", m => {
+	bot.once("kick", (m) => {
 		console.log("Got 'kick'!");
 		console.log(m);
 		setTimeout(() => init("Kick"), config.DELAYS[0]);
 	});
-	bot.once("end", m => {
+	bot.once("end", (m) => {
 		console.log("Got 'end'!");
 		console.log(m);
 		setTimeout(() => init("End"), config.DELAYS[1]);
 	});
-	bot.once("error", m => {
-		if (m.message === "Invalid session.") {
+	bot.once("error", (m) => {
+		if (m.message.contains("Invalid session.")) {
 			session = false;
 			init("Error " + m);
-		} else if (
-			m.message ===
-			"Invalid credentials. Invalid username or password."
-		) {
+		} else if (m.message.contains("Invalid credentials.")) {
 			setTimeout(() => init("Error"), config.DELAYS[2]);
+		} else {
+			throw m;
 		}
 	});
 	bot.on("sleep", () => {
