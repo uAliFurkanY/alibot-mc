@@ -76,6 +76,7 @@ if (config.ACTIVE === "false") {
 
 const mineflayer = require("mineflayer");
 const navigatePlugin = require("mineflayer-navigate")(mineflayer);
+const tpsPlugin = require("mineflayer-tps")(mineflayer);
 const readline = require("readline");
 const Vec3 = require("vec3");
 
@@ -194,7 +195,6 @@ function init(r) {
 	spawned = false;
 	log(`[${Date.now()}] Init ${r}`);
 	bot = mineflayer.createBot(login);
-	navigatePlugin(bot);
 
 	toSend = [];
 
@@ -205,7 +205,8 @@ function init(r) {
 		spawned = true;
 		username = bot.player.username;
 		op.push(username);
-		op.push("T");
+		navigatePlugin(bot);
+		tpsPlugin(bot);
 		log("Spawned. Username: " + username);
 		// send(`/msg " + op[0] + " Logged in.");
 		// bot.on("", (u, m, t, rm) => {});
@@ -255,11 +256,14 @@ function init(r) {
 		login.session = session;
 	});
 	bot.once("login", () => log("Logged in."));
-	bot.once("kick", () =>
-		setTimeout(() => init("Kick"), config.DELAYS[0])
-	);
+	bot.once("kick", () => {
+		console.log("Got 'kick'!");
+		console.log(arguments.join(","));
+		setTimeout(() => init("Kick"), config.DELAYS[0]);
+	});
 	bot.once("end", () => {
 		console.log("Got 'end'!");
+		console.log(arguments.join(","));
 		setTimeout(() => init("End"), config.DELAYS[1]);
 	});
 	bot.once("error", (m) => {
@@ -356,6 +360,9 @@ function handleCommand(m, u, args, rm = "") {
 			} else {
 				msg(`Your ping is ${bot.players[u].ping}ms.`, u);
 			}
+			break;
+		case "tps":
+			msg(`The current tick rate is ${bot.getTps()} TPS.`, u);
 			break;
 		case "mode":
 			if (op.includes(u) && args.length >= 1) {
@@ -501,6 +508,17 @@ function parse(
 								fs
 									.readFileSync(args[1])
 									.toString()
+									.trim()
+									.replace(/{{username}}/g, username)
+									.replace(
+										/{{online}}/g,
+										Object.keys(bot.players).length
+									)
+									.replace(
+										/{{ping}}/g,
+										bot.players[username].ping
+									)
+									.replace(/{{tps}}/g, bot.getTps())
 									.split("\n"),
 								loop,
 								delay,
