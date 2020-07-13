@@ -259,10 +259,14 @@ function init(r) {
 	bot.once("login", () => log("Logged in."));
 	bot.once("kick", () => {
 		console.log("Got 'kick'!");
+		if (bot.getTps() < 17)
+			void 0; //It crashed
 		setTimeout(() => init("Kick"), config.DELAYS[0]);
 	});
 	bot.once("end", () => {
 		console.log("Got 'end'!");
+		if (bot.getTps() < 17)
+			void 0; //It crashed
 		setTimeout(() => init("End"), config.DELAYS[1]);
 	});
 	bot.once("error", (m) => {
@@ -272,7 +276,7 @@ function init(r) {
 		} else if (m.message.contains("Invalid credentials.")) {
 			setTimeout(() => init("Error"), config.DELAYS[2]);
 		} else {
-			throw m;
+			log(m);
 		}
 	});
 	bot.on("sleep", () => {
