@@ -145,7 +145,7 @@ function isValidHttpUrl(string) {
 	return url.protocol === "http:" || url.protocol === "https:";
 }
 
-let logFile = fs.open("alibot-" + start + ".log", "w");
+let logFile = fs.openSync("alibot-" + start + ".log", "w");
 function log(message, logToFile, date = new Date(Date.now())) {
 	let msg = `<${date.getHours()}:${date.getMinutes()}> ${message}`;
 
