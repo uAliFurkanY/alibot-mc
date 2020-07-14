@@ -48,11 +48,10 @@ try {
 		conf.TCP_HOST ||
 		"localhost";
 } catch (e) {
-	log(
-		"This error should NEVER happen. If it did, you edited/deleted 'config.json'. If you didn't, create an Issue. If you did, just use setup.js.",
-		LOG_ERR
+	console.log(
+		"This error should NEVER happen. If it did, you edited/deleted 'config.json'. If you didn't, create an Issue. If you did, just use setup.js."
 	);
-	log("Also provide this: ");
+	console.log("Also provide this: ");
 	console.log(e);
 	process.exit(1);
 }
@@ -146,12 +145,13 @@ function isValidHttpUrl(string) {
 	return url.protocol === "http:" || url.protocol === "https:";
 }
 
+let logFile = fs.open("alibot-" + start + ".log", "w");
 function log(message, logToFile, date = new Date(Date.now())) {
 	let msg = `<${date.getHours()}:${date.getMinutes()}> ${message}`;
 
 	console.log(msg);
 
-	if (logToFile) fs.writeFileSync("alibot.log", msg + "\n");
+	if (logToFile) fs.writeSync(logFile, msg + "\n");
 }
 
 function send(msg = "/help") {
