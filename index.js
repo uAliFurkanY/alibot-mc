@@ -161,7 +161,7 @@ function log(message, logToFile, date = new Date(Date.now())) {
 
 	console.log(msg);
 
-	if (logToFile) fs.writeSync(logFile, msg);
+	if (logToFile) fs.writeFileSync(logFile, msg);
 }
 
 function send(msg = "/help") {
