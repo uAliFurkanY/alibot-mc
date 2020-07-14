@@ -215,21 +215,6 @@ function init(r) {
 		op.push(username);
 		navigatePlugin(bot);
 		tpsPlugin(bot);
-		const mcData = require("minecraft-data")(bot.version);
-		const totemId = mcData.itemsByName.totem_of_undying.id;
-		if (mcData.itemsByName.totem_of_undying) {
-			setInterval(() => {
-				try {
-					var totem = bot.inventory.findInventoryItem(
-						totemId,
-						null
-					);
-					if (totem) {
-						bot.equip(totem, "off-hand");
-					}
-				} catch {}
-			}, 200);
-		}
 		log("SPAWNED Username: " + username, LOG_STAT);
 		// send(`/msg " + op[0] + " Logged in.");
 		// bot.on("", (u, m, t, rm) => {});
