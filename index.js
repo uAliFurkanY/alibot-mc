@@ -231,7 +231,7 @@ function init(r) {
 		);
 		bot.on("tpa", (u, m, t, rm) => {
 			let user = m.extra[0].text;
-			log("TPA" + user, LOG_CMD);
+			log("TPA " + user, LOG_CMD);
 			if (op.includes(user) || mode !== "private") {
 				send(`/tpy ${user}`);
 			} else {
@@ -251,7 +251,7 @@ function init(r) {
 			m = m.split(": ");
 			m.shift();
 			m = m.join(": ");
-			u !== username ? log(`${u} -> ${m}`, LOG_CMD) : false;
+			u !== username ? log(`CMD ${u} ${m}`, LOG_CMD) : false;
 			let args = m.split(" ");
 			args.shift();
 			let oldm = m;
@@ -266,13 +266,11 @@ function init(r) {
 	});
 	bot.once("login", () => log("Logged in.", LOG_STAT));
 	bot.once("kick", () => {
-		log("KICK", LOG_KICK);
-		log("TPS " + bot.getTps(), LOG_KICK);
+		log("KICK " + "TPS " + bot.getTps(), LOG_KICK);
 		setTimeout(() => init("Kick"), config.DELAYS[0]);
 	});
 	bot.once("end", () => {
-		log("END", LOG_END);
-		log("TPS " + bot.getTps(), LOG_END);
+		log("END " + "TPS " + bot.getTps(), LOG_END);
 		setTimeout(() => init("End"), config.DELAYS[1]);
 	});
 	bot.once("error", (m) => {
@@ -605,7 +603,7 @@ function loadArray(commands = [], loop, delay, random, randomLen, u) {
 					log(`${u} empty message`);
 					return false;
 				}
-				log(`${u} -> ${m}`, LOG_CMD);
+				log(`CMD ${u} ${m}`, LOG_CMD);
 				let args = m.split(" ");
 				args.shift();
 				let rm = m;
@@ -632,7 +630,7 @@ function loadArray(commands = [], loop, delay, random, randomLen, u) {
 						log(`${u} empty message`);
 						return false;
 					}
-					log(`${u} -> ${m}`, LOG_CMD);
+					log(`CMD ${u} ${m}`, LOG_CMD);
 					let args = m.split(" ");
 					args.shift();
 					let rm = m;
@@ -676,7 +674,7 @@ try {
 						log(`${u} empty message`);
 						return false;
 					}
-					log(`${u} -> ${m}`, LOG_CMD);
+					log(`CMD ${u} ${m}`, LOG_CMD);
 					let args = m.split(" ");
 					args.shift();
 					let rm = m;
