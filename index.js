@@ -158,7 +158,7 @@ function log(message, logToFile, date = new Date(Date.now())) {
 	console.log(msg);
 
 	if (logToFile) {
-		fs.writeFileSync("alibot-".concat(".log"), msg + "\n");
+		fs.writeFileSync("alibot-".concat(start, ".log"), msg + "\n");
 	}
 }
 
