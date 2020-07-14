@@ -154,14 +154,14 @@ function isValidHttpUrl(string) {
 	return url.protocol === "http:" || url.protocol === "https:";
 }
 
-const logFile = "LOG-" + Date.now() + ".log";
+let logFile = "alibot.log";
 
 function log(message, logToFile, date = new Date(Date.now())) {
 	let msg = `<${date.getHours()}:${date.getMinutes()}> ${message}`;
 
 	console.log(msg);
 
-	if (logToFile) fs.writeFileSync(logFile, msg);
+	if (logToFile) fs.writeFileSync("alibot.log", msg + "\n");
 }
 
 function send(msg = "/help") {
