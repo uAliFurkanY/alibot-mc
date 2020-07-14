@@ -161,7 +161,7 @@ function log(message, logToFile, date = new Date(Date.now())) {
 
 	console.log(msg);
 
-	if (logToFile) fs.writeFileSync("alibot.log", msg + "\n");
+	if (logToFile) fs.writeFileSync(logFile, msg + "\n");
 }
 
 function send(msg = "/help") {
