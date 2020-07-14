@@ -258,6 +258,9 @@ function init(r) {
 			m = m.split(" ")[0];
 			handleCommand(m, u, args, oldm);
 		});
+		bot.on("chat", (u, m, t, rm) => {
+			if (LOG_CHAT) log(`CHAT <${u}> ${m}`, true);
+		});
 	}
 	bot.once("spawn", main);
 	bot._client.once("session", () => {
