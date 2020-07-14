@@ -268,11 +268,19 @@ function init(r) {
 	});
 	bot.once("login", () => log("LOGIN", LOG_STAT));
 	bot.once("kick", () => {
-		log("KICK " + "TPS " + bot.getTps(), LOG_KICK);
+		let tps;
+		try {
+			tps = bot.getTps();
+		} catch {}
+		log("KICK " + tps ? "TPS " + tps : "", LOG_KICK);
 		setTimeout(() => init("Kick"), config.DELAYS[0]);
 	});
 	bot.once("end", () => {
-		log("END " + "TPS " + bot.getTps(), LOG_END);
+		let tps;
+		try {
+			tps = bot.getTps();
+		} catch {}
+		log("END " + tps ? "TPS " + tps : "", LOG_END);
 		setTimeout(() => init("End"), config.DELAYS[1]);
 	});
 	bot.once("error", (m) => {
