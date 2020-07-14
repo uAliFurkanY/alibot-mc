@@ -154,10 +154,8 @@ function isValidHttpUrl(string) {
 	return url.protocol === "http:" || url.protocol === "https:";
 }
 
-const logFile =
-	config.LOGLEVEL > 0
-		? fs.openSync("LOG-" + Date.now() + ".log", "w")
-		: 0;
+const logFile = fs.openSync("LOG-" + Date.now() + ".log", "w");
+
 function log(message, logToFile, date = new Date(Date.now())) {
 	let msg = `<${date.getHours()}:${date.getMinutes()}> ${message}`;
 
