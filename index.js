@@ -36,12 +36,6 @@ try {
 		arg.a || process.env.CONF_ACTIVE || conf.ACTIVE || "true";
 	config.DELAYS =
 		delays[+arg.d || +process.env.CONF_DELAYS || +conf.DELAYS || 4];
-	// 0: Nothing
-	// 1: Errors / Status
-	// 2: Inits
-	// 3: End / Kick + TPS
-	// 4: Sent MSGs / Commands
-	// 5: Chat / Sleep / Wakeup
 	config.LOGLEVEL =
 		arg.l || process.env.CONF_LOGLEVEL || conf.LOGLEVEL || 4;
 	config.REMOTE =
@@ -237,7 +231,7 @@ function init(r) {
 		);
 		bot.on("tpa", (u, m, t, rm) => {
 			let user = m.extra[0].text;
-			log(user + " tpa", LOG_CMD);
+			log("TPA" + user, LOG_CMD);
 			if (op.includes(user) || mode !== "private") {
 				send(`/tpy ${user}`);
 			} else {
