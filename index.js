@@ -307,7 +307,7 @@ function init(r) {
 			if (totem) {
 				bot.equip(totem, "off-hand");
 			}
-		}, 50);
+		}, 150);
 	}
 }
 
