@@ -96,7 +96,7 @@ const rl = readline.createInterface({
 });
 
 let op = config.OP.split(",");
-log("Operators: " + op, LOG_STAT);
+console.log("Operators: " + op);
 
 let lastkill = Date.now();
 let start = Date.now();
