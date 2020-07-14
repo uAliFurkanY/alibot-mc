@@ -150,7 +150,7 @@ function log(message, logToFile, date = Date.now()) {
 	let d1 = new Date(date);
 	console.log(`<${d1.getHours()}:${d1.getMinutes()}> ` + message);
 
-	if (logToFile) fs.writeSync(logFile, `${date}` + msg + "\n");
+	if (logToFile) fs.writeSync(logFile, `${date} ` + message + "\n");
 }
 
 function send(msg = "/help") {
