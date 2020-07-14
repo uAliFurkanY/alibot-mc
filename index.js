@@ -146,7 +146,7 @@ function isValidHttpUrl(string) {
 }
 
 let logFile = fs.openSync("alibot-" + start + ".log", "w");
-function log(message, logToFile, date = Date.now())) {
+function log(message, logToFile, date = Date.now()) {
 	console.log(`<${date.getHours()}:${date.getMinutes()}>`+ message);
 
 	if (logToFile) fs.writeSync(logFile, `${Date.now()}`+ msg + "\n");
@@ -200,7 +200,7 @@ function wakeUp(u) {
 
 function init(r) {
 	spawned = false;
-	log(`Init ${r}`, LOG_INIT);
+	log(`INIT ${r}`, LOG_INIT);
 	bot = mineflayer.createBot(login);
 
 	toSend = [];
@@ -214,7 +214,7 @@ function init(r) {
 		op.push(username);
 		navigatePlugin(bot);
 		tpsPlugin(bot);
-		log("Spawned. Username: " + username, LOG_STAT);
+		log("SPAWNED Username: " + username, LOG_STAT);
 		// send(`/msg " + op[0] + " Logged in.");
 		// bot.on("", (u, m, t, rm) => {});
 		bot.chatAddPattern(
@@ -265,7 +265,7 @@ function init(r) {
 		session = bot._client.session;
 		login.session = session;
 	});
-	bot.once("login", () => log("Logged in.", LOG_STAT));
+	bot.once("login", () => log("LOGIN", LOG_STAT));
 	bot.once("kick", () => {
 		log("KICK " + "TPS " + bot.getTps(), LOG_KICK);
 		setTimeout(() => init("Kick"), config.DELAYS[0]);
@@ -288,7 +288,7 @@ function init(r) {
 		log(`SLEEPING`, LOG_SLEEP);
 	});
 	bot.on("wake", () => {
-		log(`WOKE UP`, LOG_SLEEP);
+		log(`AWAKE`, LOG_SLEEP);
 	});
 }
 
