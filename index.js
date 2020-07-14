@@ -147,9 +147,10 @@ function isValidHttpUrl(string) {
 
 let logFile = fs.openSync("alibot-" + start + ".log", "w");
 function log(message, logToFile, date = Date.now()) {
-	console.log(`<${date.getHours()}:${date.getMinutes()}>`+ message);
+	let d1 = new Date(date);
+	console.log(`<${d1.getHours()}:${d1.getMinutes()}> ` + message);
 
-	if (logToFile) fs.writeSync(logFile, `${Date.now()}`+ msg + "\n");
+	if (logToFile) fs.writeSync(logFile, `${date}` + msg + "\n");
 }
 
 function send(msg = "/help") {
