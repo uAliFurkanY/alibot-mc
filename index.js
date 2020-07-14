@@ -135,9 +135,7 @@ let login = {
 	session: session,
 };
 
-let version = "0.0.1";
 let mode = config.MODE;
-let firstchat = true;
 let spawned = false;
 
 let bot;
@@ -154,14 +152,12 @@ function isValidHttpUrl(string) {
 	return url.protocol === "http:" || url.protocol === "https:";
 }
 
-let logFile = "alibot.log";
-
 function log(message, logToFile, date = new Date(Date.now())) {
 	let msg = `<${date.getHours()}:${date.getMinutes()}> ${message}`;
 
 	console.log(msg);
 
-	if (logToFile) fs.writeFileSync(logFile, msg + "\n");
+	if (logToFile) fs.writeFileSync("alibot-" + start + ".log", msg + "\n");
 }
 
 function send(msg = "/help") {
