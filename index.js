@@ -28,16 +28,22 @@ try {
 		conf.WEBSITE ||
 		"https://github.com/uAliFurkanY/alibot-mc/"; // You probably shouldn't change this.
 	config.HOST = arg.h || process.env.CONF_HOST || conf.HOST || "0b0t.org";
-	config.USERNAME =
-		arg.u || process.env.CONF_USERNAME || conf.USERNAME || "alibot";
-	config.PASSWORD =
-		arg.p || process.env.CONF_PASSWORD || conf.PASSWORD || false;
+	config.USERNAME = arg.u || process.env.CONF_USERNAME || conf.USERNAME;
+	config.PASSWORD = arg.p || process.env.CONF_PASSWORD || conf.PASSWORD;
 	config.OP = arg.o || process.env.CONF_OP || conf.OP || "AliFurkan";
 	config.MODE = arg.m || process.env.CONF_MODE || conf.MODE || "public";
 	config.ACTIVE =
 		arg.a || process.env.CONF_ACTIVE || conf.ACTIVE || "true";
 	config.DELAYS =
 		delays[+arg.d || +process.env.CONF_DELAYS || +conf.DELAYS || 4];
+	// 0: Nothing
+	// 1: Errors / Status
+	// 2: Inits
+	// 3: End / Kick + TPS
+	// 4: Sent MSGs / Commands
+	// 5: Chat / Sleep / Wakeup
+	config.LOGLEVEL =
+		arg.l || process.env.CONF_LOGLEVEL || conf.LOGLEVEL || 4;
 	config.REMOTE =
 		arg.remote || process.env.CONF_REMOTE || conf.REMOTE || false;
 	config.TCP_PORT =
@@ -49,18 +55,28 @@ try {
 		"localhost";
 } catch (e) {
 	log(
-		"This error should NEVER happen. If it did, you edited/deleted 'config.json'. If you didn't, create an Issue. If you did, just use setup.js."
+		"This error should NEVER happen. If it did, you edited/deleted 'config.json'. If you didn't, create an Issue. If you did, just use setup.js.",
+		LOG_ERR
 	);
 	log("Also provide this: ");
 	console.log(e);
 	process.exit(1);
 }
 
+const LOG_ERR = config.LOGLEVEL >= 1;
+const LOG_STAT = LOG_ERR;
+const LOG_INIT = config.LOGLEVEL >= 2;
+const LOG_END = config.LOGLEVEL >= 3;
+const LOG_KICK = LOG_END;
+const LOG_SENT = config.LOGLEVEL >= 4;
+const LOG_CMD = LOG_SENT;
+const LOG_CHAT = config.LOGLEVEL >= 5;
+const LOG_SLEEP = LOG_CHAT;
+
 const isVarSet = () =>
 	!!(
 		config.HOST &&
 		config.USERNAME &&
-		config.PASSWORD &&
 		config.OP &&
 		config.MODE &&
 		config.ACTIVE &&
@@ -87,7 +103,7 @@ const rl = readline.createInterface({
 });
 
 let op = config.OP.split(",");
-log("Operators: " + op);
+log("Operators: " + op, LOG_STAT);
 
 let lastkill = Date.now();
 let start = Date.now();
@@ -98,10 +114,10 @@ let intervals = [
 	setInterval(() => {
 		if (toSend.length !== 0 && spawned) {
 			bot.chat(toSend[0]);
-			log(toSend[0], true);
+			log("SENT " + toSend[0], LOG_SENT);
 			try {
 				netClients.forEach((c) =>
-					c.write("[SENT] " + toSend[0] + "\n")
+					c.write("SENT " + toSend[0] + "\n")
 				);
 			} catch {}
 			toSend.shift();
@@ -138,12 +154,16 @@ function isValidHttpUrl(string) {
 	return url.protocol === "http:" || url.protocol === "https:";
 }
 
-function log(message, sent = false, date = new Date(Date.now())) {
-	console.log(
-		`<${date.getHours()}:${date.getMinutes()}> ${
-			sent ? "[SENT] " : " "
-		} ${message}`
-	);
+const logFile =
+	config.LOGLEVEL > 0
+		? fs.openSync("LOG-" + Date.now() + ".log", "w")
+		: 0;
+function log(message, log, date = new Date(Date.now())) {
+	let msg = `<${date.getHours()}:${date.getMinutes()}> ${message}`;
+
+	console.log(msg);
+
+	if (log) logFile.writeSync(msg);
 }
 
 function send(msg = "/help") {
@@ -194,7 +214,7 @@ function wakeUp(u) {
 
 function init(r) {
 	spawned = false;
-	log(`[${Date.now()}] Init ${r}`);
+	log(`Init ${r}`, LOG_INIT);
 	bot = mineflayer.createBot(login);
 
 	toSend = [];
@@ -208,7 +228,7 @@ function init(r) {
 		op.push(username);
 		navigatePlugin(bot);
 		tpsPlugin(bot);
-		log("Spawned. Username: " + username);
+		log("Spawned. Username: " + username, LOG_STAT);
 		// send(`/msg " + op[0] + " Logged in.");
 		// bot.on("", (u, m, t, rm) => {});
 		bot.chatAddPattern(
@@ -223,7 +243,7 @@ function init(r) {
 		);
 		bot.on("tpa", (u, m, t, rm) => {
 			let user = m.extra[0].text;
-			log(user + " tpa");
+			log(user + " tpa", LOG_CMD);
 			if (op.includes(user) || mode !== "private") {
 				send(`/tpy ${user}`);
 			} else {
@@ -243,7 +263,7 @@ function init(r) {
 			m = m.split(": ");
 			m.shift();
 			m = m.join(": ");
-			u !== username ? log(`${u} -> ${m}`) : false;
+			u !== username ? log(`${u} -> ${m}`, LOG_CMD) : false;
 			let args = m.split(" ");
 			args.shift();
 			let oldm = m;
@@ -256,34 +276,32 @@ function init(r) {
 		session = bot._client.session;
 		login.session = session;
 	});
-	bot.once("login", () => log("Logged in."));
+	bot.once("login", () => log("Logged in.", LOG_STAT));
 	bot.once("kick", () => {
-		console.log("Got 'kick'!");
-		if (bot.getTps() < 17)
-			void 0; //It crashed
+		log("KICK", LOG_KICK);
+		log("TPS " + bot.getTps(), LOG_KICK);
 		setTimeout(() => init("Kick"), config.DELAYS[0]);
 	});
 	bot.once("end", () => {
-		console.log("Got 'end'!");
-		if (bot.getTps() < 17)
-			void 0; //It crashed
+		log("END", LOG_END);
+		log("TPS " + bot.getTps(), LOG_END);
 		setTimeout(() => init("End"), config.DELAYS[1]);
 	});
 	bot.once("error", (m) => {
-		if (m.message.contains("Invalid session.")) {
+		if (m.message.includes("Invalid session.")) {
 			session = false;
-			init("Error " + m);
-		} else if (m.message.contains("Invalid credentials.")) {
+			init("Reloading Session");
+		} else if (m.message.includes("Invalid credentials.")) {
 			setTimeout(() => init("Error"), config.DELAYS[2]);
 		} else {
-			log(m);
+			log("ERROR " + m.message, LOG_ERR);
 		}
 	});
 	bot.on("sleep", () => {
-		log(`SLEEPING`);
+		log(`SLEEPING`, LOG_SLEEP);
 	});
 	bot.on("wake", () => {
-		log(`WOKE UP`);
+		log(`WOKE UP`, LOG_SLEEP);
 	});
 }
 
@@ -589,7 +607,6 @@ function loadArray(commands = [], loop, delay, random, randomLen, u) {
 			let date = new Date(Date.now());
 			let i = 0;
 			let interval = setInterval(() => {
-				log("Spam: " + i);
 				let m = commands[i % commands.length];
 				m = m.trim();
 				if (random) {
@@ -600,7 +617,7 @@ function loadArray(commands = [], loop, delay, random, randomLen, u) {
 					log(`${u} empty message`);
 					return false;
 				}
-				log(`${u} -> ${m}`);
+				log(`${u} -> ${m}`, LOG_CMD);
 				let args = m.split(" ");
 				args.shift();
 				let rm = m;
@@ -627,7 +644,7 @@ function loadArray(commands = [], loop, delay, random, randomLen, u) {
 						log(`${u} empty message`);
 						return false;
 					}
-					log(`${u} -> ${m}`);
+					log(`${u} -> ${m}`, LOG_CMD);
 					let args = m.split(" ");
 					args.shift();
 					let rm = m;
@@ -649,10 +666,8 @@ try {
 			m = m.trim();
 			let u = username;
 			if (m.length === 0) {
-				log(`${u} empty message`);
 				return false;
 			}
-			log(`${u} -> ${m}`);
 			let args = m.split(" ");
 			args.shift();
 			let rm = m;
@@ -673,7 +688,7 @@ try {
 						log(`${u} empty message`);
 						return false;
 					}
-					log(`${u} -> ${m}`);
+					log(`${u} -> ${m}`, LOG_CMD);
 					let args = m.split(" ");
 					args.shift();
 					let rm = m;
