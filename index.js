@@ -215,6 +215,7 @@ function init(r) {
 		op.push(username);
 		navigatePlugin(bot);
 		tpsPlugin(bot);
+		const mcData = require("minecraft-data")(bot.version);
 		log("SPAWNED Username: " + username, LOG_STAT);
 		// send(`/msg " + op[0] + " Logged in.");
 		// bot.on("", (u, m, t, rm) => {});
@@ -267,7 +268,7 @@ function init(r) {
 		login.session = session;
 	});
 	bot.once("login", () => log("LOGIN", LOG_STAT));
-	bot.once("kick", () => {
+	bot.once("kicked", () => {
 		let tps;
 		try {
 			tps = bot.getTps();
@@ -299,6 +300,15 @@ function init(r) {
 	bot.on("wake", () => {
 		log(`AWAKE`, LOG_SLEEP);
 	});
+	const totemId = mcData.itemsByName.totem_of_undying.id;
+	if (mcData.itemsByName.totem_of_undying) {
+		setInterval(() => {
+			var totem = bot.inventory.findInventoryItem(totemId, null);
+			if (totem) {
+				bot.equip(totem, "off-hand");
+			}
+		}, 50);
+	}
 }
 
 function handleCommand(m, u, args, rm = "") {
