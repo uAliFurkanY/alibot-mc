@@ -158,12 +158,12 @@ const logFile =
 	config.LOGLEVEL > 0
 		? fs.openSync("LOG-" + Date.now() + ".log", "w")
 		: 0;
-function log(message, log, date = new Date(Date.now())) {
+function log(message, logToFile, date = new Date(Date.now())) {
 	let msg = `<${date.getHours()}:${date.getMinutes()}> ${message}`;
 
 	console.log(msg);
 
-	if (log) logFile.writeSync(msg);
+	if (logToFile) logFile.writeSync(msg);
 }
 
 function send(msg = "/help") {
