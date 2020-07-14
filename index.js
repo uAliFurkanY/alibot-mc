@@ -228,7 +228,7 @@ function init(r) {
 						bot.equip(totem, "off-hand");
 					}
 				} catch {}
-			}, 150);
+			}, 200);
 		}
 		log("SPAWNED Username: " + username, LOG_STAT);
 		// send(`/msg " + op[0] + " Logged in.");
@@ -282,7 +282,7 @@ function init(r) {
 		login.session = session;
 	});
 	bot.once("login", () => log("LOGIN", LOG_STAT));
-	bot.once("kicked", () => {
+	bot.on("kicked", () => {
 		let tps;
 		try {
 			tps = bot.getTps();
@@ -290,7 +290,7 @@ function init(r) {
 		log("KICK " + (tps !== undefined ? "TPS " + tps : ""), LOG_KICK);
 		setTimeout(() => init("Kick"), config.DELAYS[0]);
 	});
-	bot.once("end", () => {
+	bot.on("end", () => {
 		let tps;
 		try {
 			tps = bot.getTps();
@@ -298,7 +298,7 @@ function init(r) {
 		log("END " + (tps !== undefined ? "TPS " + tps : ""), LOG_END);
 		setTimeout(() => init("End"), config.DELAYS[1]);
 	});
-	bot.once("error", (m) => {
+	bot.on("error", (m) => {
 		if (m.message.includes("Invalid session.")) {
 			session = false;
 			init("Reloading Session");
