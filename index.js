@@ -267,14 +267,6 @@ function init(r) {
 		login.session = session;
 	});
 	bot.once("login", () => log("LOGIN", LOG_STAT));
-	bot.on("kicked", () => {
-		let tps;
-		try {
-			tps = bot.getTps();
-		} catch {}
-		log("KICK " + (tps !== undefined ? "TPS " + tps : ""), LOG_KICK);
-		setTimeout(() => init("Kick"), config.DELAYS[0]);
-	});
 	bot.on("end", () => {
 		let tps;
 		try {
