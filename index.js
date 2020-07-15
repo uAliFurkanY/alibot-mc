@@ -524,6 +524,7 @@ function handleCommand(m, u, args, rm = "") {
 				try {
 					clearInterval(fightInt);
 				} catch {}
+				console.log(player);
 				fightInt = setInterval(() => {
 					bot.lookAt(player.position.offset(0, 1.6, 0));
 					bot.attack(player);
