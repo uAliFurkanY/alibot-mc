@@ -525,7 +525,6 @@ function handleCommand(m, u, args, rm = "") {
 					clearInterval(fightInt);
 				} catch {}
 				fightInt = setInterval(() => {
-					bot.navigate.to(player.position);
 					bot.lookAt(player.position.offset(0, 1.6, 0));
 					bot.attack(player);
 				}, 200);
