@@ -199,6 +199,25 @@ function wakeUp(u) {
 	});
 }
 
+function nearestPlayer() {
+	let best = null;
+	let bestDistance = null;
+
+	for (const entity in Object.values(bot.entities)) {
+		if (entity === bot.entity) continue;
+		if (entity.type !== "player") continue;
+
+		const dist = bot.entity.position.distanceTo(entity.position);
+
+		if (!best || dist < bestDistance) {
+			best = entity;
+			bestDistance = dist;
+		}
+	}
+
+	return best;
+}
+
 function init(r) {
 	spawned = false;
 	log(`INIT ${r}`, LOG_INIT);
@@ -210,6 +229,7 @@ function init(r) {
 	start = Date.now();
 
 	function main() {
+		let fightInt;
 		spawned = true;
 		username = bot.player.username;
 		op.push(username);
@@ -478,7 +498,7 @@ function handleCommand(m, u, args, rm = "") {
 				msg(`You are not an operator and the mode is ${mode}.`, u);
 			}
 			break;
-		case "cancelGoto":
+		case "stop":
 			if (op.includes(u) || mode === "public") {
 				msg(`OK. Stopping...`, u);
 				try {
@@ -494,6 +514,34 @@ function handleCommand(m, u, args, rm = "") {
 			op.includes(u)
 				? process.exit(0)
 				: msg(`You are not an operator.`, u);
+		case "fight":
+			if (op.includes(u)) {
+				let player = args[0]
+					? bot.players[args[0]]
+					: nearestPlayer();
+				if (!player) return msg(`Cannot find player.`, u);
+				msg(`OK. Fighting ${player.username}.`, u);
+				try {
+					clearInterval(fightInt);
+				} catch {}
+				fightInt = setInterval(() => {
+					bot.navigate.to(player.position);
+					bot.lookAt(player.position.offset(0, 1.6, 0));
+					bot.attack(player);
+				}, 200);
+			} else {
+				msg(`You are not an operator.`, u);
+			}
+			break;
+		case "peace":
+			if (op.includes(u))
+				try {
+					clearInterval(fightInt);
+				} catch {
+					msg(`Already stopped.`, u);
+				}
+			else msg(`You are not an operator.`, u);
+			break;
 	}
 }
 
